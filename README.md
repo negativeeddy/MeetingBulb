@@ -5,6 +5,8 @@ This is an ARM template which deploys the Logic App portion of the solution. The
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnegativeeddy%2FMeetingBulb%2Fmaster%2Fazuredeploy.json)
 
+[![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fnegativeeddy%2FMeetingBulb%2Fmaster%2Fazuredeploy.json)
+
 When first deployed, the "Get calendar view of events" activity will fail because it has not been authorized. Open the logic app editor and expand the Connections node. Then click the "!" under "invalid." That will initiate the authentication flow.
 
 You can find your calendar ID by using the [Graph Explorer](https://developer.microsoft.com/en-us/graph/graph-explorer) and running the query "https://graph.microsoft.com/v1.0/me/Calendars"
