@@ -1,0 +1,191 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "connections_office365_name": {
+            "defaultValue": "office365",
+            "type": "String"
+        },
+        "workflows_OutlookMeetingLight_name": {
+            "defaultValue": "OutlookMeetingLight",
+            "type": "String"
+        },
+        "ifttt_webhook_key": {
+            "type": "String"
+        },
+        "o365_displayname": {
+            "type": "string"
+        },
+        "calendar_id":{
+            "type":"string"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_office365_name')]",
+            "properties": {
+                "displayName": "[parameters('o365_displayname')]",
+                "customParameterValues": {
+                },
+                "api": {
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location,'/managedApis/', parameters('connections_office365_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_OutlookMeetingLight_name')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', parameters('connections_office365_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {
+                            },
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Week",
+                                "interval": 1,
+                                "schedule": {
+                                    "hours": [
+                                        "6",
+                                        "7",
+                                        "8",
+                                        "9",
+                                        "10",
+                                        "11",
+                                        "12",
+                                        "13",
+                                        "14",
+                                        "15",
+                                        "16",
+                                        "17",
+                                        "18",
+                                        "19",
+                                        "20"
+                                    ],
+                                    "minutes": [
+                                        0,
+                                        1,
+                                        14,
+                                        15,
+                                        16,
+                                        29,
+                                        30,
+                                        31,
+                                        44,
+                                        45,
+                                        46,
+                                        59
+                                    ],
+                                    "weekDays": [
+                                        "Monday",
+                                        "Tuesday",
+                                        "Wednesday",
+                                        "Thursday",
+                                        "Friday"
+                                    ]
+                                },
+                                "timeZone": "Central Standard Time"
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "Condition": {
+                            "actions": {
+                                "HTTP_-_turn_on_lights": {
+                                    "runAfter": {
+                                    },
+                                    "type": "Http",
+                                    "inputs": {
+                                        "method": "POST",
+                                        "uri": "[concat('https://maker.ifttt.com/trigger/turn_on_lights/with/key/', parameters('ifttt_webhook_key'))]"
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Get_calendar_view_of_events_(V3)": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "else": {
+                                "actions": {
+                                    "HTTP_-_turn_off_lights": {
+                                        "runAfter": {
+                                        },
+                                        "type": "Http",
+                                        "inputs": {
+                                            "method": "POST",
+                                            "uri": "[concat('https://maker.ifttt.com/trigger/turn_off_lights/with/key/', parameters('ifttt_webhook_key'))]"
+                                        }
+                                    }
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "greater": [
+                                            "@length(body('Get_calendar_view_of_events_(V3)')?['value'])",
+                                            0
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "If"
+                        },
+                        "Get_calendar_view_of_events_(V3)": {
+                            "runAfter": {
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['office365']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/datasets/calendars/v3/tables/items/calendarview",
+                                "queries": {
+                                    "$filter": "showAs eq 'busy'",
+                                    "$top": 1,
+                                    "calendarId": "[parameters('calendar_id')]",
+                                    "endDateTimeUtc": "@{utcNow()}",
+                                    "startDateTimeUtc": "@{utcNow()}"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "office365": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_office365_name'))]",
+                                "connectionName": "office365",
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location,'/managedApis/office365')]"
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
