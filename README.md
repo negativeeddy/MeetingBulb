@@ -3,7 +3,7 @@ For my blog post https://blog.negativeeddy.com/2020/03/30/wfh-diy-meeting-light-
 
 This is an ARM template which deploys the Logic App portion of the solution. The logic app checks my "busy" status on my calendar on a schedule. If I am busy it, calls a webhook which turns a wifi light bulb on/off in my house. That way, my family knows I'm unavailable/available (and doesnt have to poke their head in and mime "are you on the phone?!?" all the time). 
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2Fnegativeeddy%2FMeetingBulb%2Fblob%2Fmaster%2Fazuredeploy.json)
 
 When first deployed, the "Get calendar view of events" activity will fail because it has not been authorized. Open the logic app editor and expand the Connections node. Then click the "!" under "invalid." That will initiate the authentication flow.
 
