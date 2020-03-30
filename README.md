@@ -1,6 +1,7 @@
 # MeetingBulb
+For my blog post https://blog.negativeeddy.com/2020/03/30/wfh-diy-meeting-light-bulb/ describing my quick solution to turn a light bulb on/off based on my O365 Calendar schedule ("Light on" == I'm in a meeting)
 
-This is an ARM template to deploy a Logic App which checks my "busy" status on my calendar on a schedule. If I am busy it enables a wifi light bulb in my house so that my family knows I'm unavailable (and doesnt have to poke their head in and mime "are you on the phone?!?" all the time). 
+This is an ARM template which deploys the Logic App portion of the solution. The logic app checks my "busy" status on my calendar on a schedule. If I am busy it, calls a webhook which turns a wifi light bulb on/off in my house. That way, my family knows I'm unavailable/available (and doesnt have to poke their head in and mime "are you on the phone?!?" all the time). 
 
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 
