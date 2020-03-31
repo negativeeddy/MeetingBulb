@@ -17,6 +17,7 @@
             "type": "string"
         },
         "calendar_id": {
+            "defaultValue": "Calendar",
             "type": "string"
         }
     },
