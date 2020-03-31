@@ -10,14 +10,14 @@
             "defaultValue": "OutlookMeetingLight",
             "type": "String"
         },
-        "ifttt_webhook_key": {
+        "lifx_auth_token": {
             "type": "String"
         },
         "o365_displayname": {
             "type": "string"
         },
-        "calendar_id":{
-            "type":"string"
+        "calendar_id": {
+            "type": "string"
         }
     },
     "variables": {
@@ -27,7 +27,7 @@
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
             "name": "[parameters('connections_office365_name')]",
-            "location" : "[resourceGroup().location]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "displayName": "[parameters('o365_displayname')]",
                 "customParameterValues": {
@@ -41,7 +41,7 @@
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
             "name": "[parameters('workflows_OutlookMeetingLight_name')]",
-            "location" : "[resourceGroup().location]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/connections', parameters('connections_office365_name'))]"
             ],
@@ -115,8 +115,15 @@
                                     },
                                     "type": "Http",
                                     "inputs": {
-                                        "method": "POST",
-                                        "uri": "[concat('https://maker.ifttt.com/trigger/turn_on_lights/with/key/', parameters('ifttt_webhook_key'))]"
+                                        "body": {
+                                            "power": "on"
+                                        },
+                                        "headers": {
+                                            "Authorization": "[concat('Bearer ', parameters('lifx_auth_token'))]",
+                                            "Content-Type": "application/json"
+                                        },
+                                        "method": "PUT",
+                                        "uri": "https://api.lifx.com/v1/lights/all/state"
                                     }
                                 }
                             },
@@ -132,8 +139,15 @@
                                         },
                                         "type": "Http",
                                         "inputs": {
-                                            "method": "POST",
-                                            "uri": "[concat('https://maker.ifttt.com/trigger/turn_off_lights/with/key/', parameters('ifttt_webhook_key'))]"
+                                            "body": {
+                                                "power": "off"
+                                            },
+                                            "headers": {
+                                                "Authorization": "[concat('Bearer ', parameters('lifx_auth_token'))]",
+                                                "Content-Type": "application/json"
+                                            },
+                                            "method": "PUT",
+                                            "uri": "https://api.lifx.com/v1/lights/all/state"
                                         }
                                     }
                                 }
